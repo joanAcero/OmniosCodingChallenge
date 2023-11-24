@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
-PAGE_URL = 'https://books.toscrape.com/index.html'
+BASE_URL = 'https://books.toscrape.com/index.html'
 
 def get_page(url):
     """
@@ -30,13 +30,50 @@ def get_page(url):
         # You can raise a custom exception here if needed
 
     soup = BeautifulSoup(response.content, 'html.parser')
-    return soup.prettify()
+    return soup
+
+
+def get_page_info(content):
+    """
+    Extracts information about each book on a given page.
+
+    Parameters:
+    - content (BeautifulSoup object): The HTML content of the page.
+
+    Returns:
+    Tuple of lists: Titles, ratings, prices, and picture URLs of all books on the page.
+    """
+
+    titles = []
+    ratings = []
+    prices = []
+    pictures = []
+
+    # Find all book elements identified by <li></li> tag and class = col-xs-6 col-sm-4 col-md-3 col-lg-3 in the HTML of the page.
+    book_elements = content.find_all('li', class_="col-xs-6 col-sm-4 col-md-3 col-lg-3")
+
+    # For each book element, extract the title, rating, price, and picture URL and append this information to its respective lists.
+    for book_element in book_elements:
+        title = book_element.find('h3').find('a').get('title') if book_element.find('h3') else None
+        rating = book_element.find('p', class_="star-rating").get('class')[1] if book_element.find('p', class_="star-rating") else None
+        price = book_element.find('p', class_="price_color").text if book_element.find('p', class_="price_color") else None
+        picture = book_element.find('img').get('src') if book_element.find('img') else None
+
+        titles.append(title)
+        ratings.append(rating)
+        prices.append(price)
+        pictures.append(picture)
+
+    return titles, ratings, prices, pictures
+
+
+
+
 
 if __name__ == "__main__":
-    page_content = get_page(PAGE_URL)
     
+    page_content = get_page(BASE_URL)
     
-    if page_content:
-        print(page_content)
-    else:
-        print("Failed to fetch and parse the HTML content.")
+    titles, ratings, prices, pictures = get_page_info(page_content)
+
+

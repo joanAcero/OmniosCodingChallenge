@@ -1,9 +1,30 @@
 from bs4 import BeautifulSoup
 import requests
 
-BASE_URL = 'https://books.toscrape.com/index.html'
+from book import Book
 
-def get_page(url):
+FIRST_PAGE = 'page-1.html'
+BASE_URL = 'https://books.toscrape.com/catalogue/'
+
+
+
+def get_next_page_url(content):
+    """
+    Finds the URL of the next page, if it exists.
+
+    Parameters:
+    - content (BeautifulSoup object): The HTML content of the page.
+
+    Returns:
+    - next_page_url (str): The URL of the next page, if it exists.
+    """
+
+    next_page_url = content.find('li', class_="next").find('a').get('href') if content.find('li', class_="next") else None
+    next_page_url = (BASE_URL + next_page_url) if next_page_url else None
+
+    return next_page_url
+
+def get_page_html(url):
     """
     Fetches the content of a web page specified by the provided URL, using the requests library.
     If the request is successful, the HTML content is parsed using BeautifulSoup,
@@ -30,6 +51,23 @@ def get_page(url):
     soup = BeautifulSoup(response.content, 'html.parser')
     return soup
 
+def get_book_info(book_content):
+    """
+    Extracts information about a book from its HTML content.
+
+    Parameters:
+    - book_content (BeautifulSoup object): The HTML content of the book.
+
+    Returns:
+    Tuple of strings: Title, rating, price, and picture URL of the book.
+    """
+
+    title = book_content.find('h3').find('a').get('title') if book_content.find('h3') else None
+    rating = book_content.find('p', class_="star-rating").get('class')[1] if book_content.find('p', class_="star-rating") else None
+    price = book_content.find('p', class_="price_color").text if book_content.find('p', class_="price_color") else None
+    picture = book_content.find('img').get('src') if book_content.find('img') else None
+
+    return title, rating, price, picture
 
 def get_page_info(content):
     """
@@ -52,10 +90,10 @@ def get_page_info(content):
 
     # For each book element, extract the title, rating, price, and picture URL and append this information to its respective lists.
     for book_element in book_elements:
-        title = book_element.find('h3').find('a').get('title') if book_element.find('h3') else None
-        rating = book_element.find('p', class_="star-rating").get('class')[1] if book_element.find('p', class_="star-rating") else None
-        price = book_element.find('p', class_="price_color").text if book_element.find('p', class_="price_color") else None
-        picture = book_element.find('img').get('src') if book_element.find('img') else None
+        title, rating, price, picture = get_book_info(book_element)
+
+        # Create a Book object for each book and append it to the books list.
+        Book(title, rating, price, picture, None)
 
         titles.append(title)
         ratings.append(rating)
@@ -64,8 +102,7 @@ def get_page_info(content):
 
     return titles, ratings, prices, pictures
 
-
-def get_all_pages_info(content):
+def get_all_pages_info(page_content):
     """
     Extracts information about all books on a given page and all subsequent pages.
 
@@ -76,22 +113,42 @@ def get_all_pages_info(content):
     Tuple of lists: Titles, ratings, prices, and picture URLs of all books on the page.
     """
 
-    return [], [], [], []
+    all_titles = []
+    all_ratings = []
+    all_prices = []
+    all_pictures = []
 
+    current_page_content = page_content
 
+    # While there is a next page, fetch its content and extract the information about the books on it.
+    while current_page_content:
+
+        #Get the titles, ratings, prices and picture URL of the books of the current page.
+        titles, ratings, prices, pictures = get_page_info(page_content)
+
+        all_titles.extend(titles)
+        all_ratings.extend(ratings)
+        all_prices.extend(prices)
+        all_pictures.extend(pictures)
+
+        # Find the URL of the next page, if it exists.
+        next_page_url = get_next_page_url(current_page_content)
+
+        # If the next page exists, fetch its content and repeat the process.
+        current_page_content = get_page_html(next_page_url) if next_page_url else None
+
+    return all_titles, all_ratings, all_prices, all_pictures
 
 
 if __name__ == "__main__":
-    
-    page_content = get_page(BASE_URL)
-    
 
-    titles, ratings, prices, pictures = get_all_pages_info(page_content)
+    base_page_content = get_page_html(BASE_URL + FIRST_PAGE)
+    
+    titles, ratings, prices, pictures = get_all_pages_info(base_page_content)
 
-    print('Titles:', titles)
-    print('Ratings:', ratings)
-    print('Prices:', prices)
-    print('Pictures:', pictures)
+    for book in Book.get_all_books():
+        print(str(book))
+        print()
 
 
 

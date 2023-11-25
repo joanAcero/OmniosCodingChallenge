@@ -7,7 +7,6 @@ FIRST_PAGE = 'page-1.html'
 BASE_URL = 'https://books.toscrape.com/catalogue/'
 
 
-
 def get_next_page_url(content):
     """
     Finds the URL of the next page, if it exists.
@@ -23,6 +22,7 @@ def get_next_page_url(content):
     next_page_url = (BASE_URL + next_page_url) if next_page_url else None
 
     return next_page_url
+
 
 def get_page_html(url):
     """
@@ -51,9 +51,25 @@ def get_page_html(url):
     soup = BeautifulSoup(response.content, 'html.parser')
     return soup
 
+def new_book_object(title, rating, price, picture, id):
+    """
+    Creates a new Book object.
+
+    Parameters:
+    - title (str): The title of the book.
+    - rating (str): The rating of the book.
+    - price (str): The price of the book.
+    - picture (str): The URL of the picture of the book.
+    - id (int): The ID of the book.
+    """
+    Book(title, rating, price, picture, id)
+
+    
+
+
 def get_book_info(book_content):
     """
-    Extracts information about a book from its HTML content.
+    Extracts information about a book from its HTML content and creates a Book object.
 
     Parameters:
     - book_content (BeautifulSoup object): The HTML content of the book.
@@ -66,6 +82,9 @@ def get_book_info(book_content):
     rating = book_content.find('p', class_="star-rating").get('class')[1] if book_content.find('p', class_="star-rating") else None
     price = book_content.find('p', class_="price_color").text if book_content.find('p', class_="price_color") else None
     picture = book_content.find('img').get('src') if book_content.find('img') else None
+
+    # Create a Book object for each book and append it to the books list.
+    new_book_object(title, rating, price, picture, None)
 
     return title, rating, price, picture
 
@@ -92,15 +111,13 @@ def get_page_info(content):
     for book_element in book_elements:
         title, rating, price, picture = get_book_info(book_element)
 
-        # Create a Book object for each book and append it to the books list.
-        Book(title, rating, price, picture, None)
-
         titles.append(title)
         ratings.append(rating)
         prices.append(price)
         pictures.append(picture)
 
     return titles, ratings, prices, pictures
+
 
 def get_all_pages_info(page_content):
     """

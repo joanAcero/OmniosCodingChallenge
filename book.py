@@ -15,11 +15,12 @@ class Book:
 
         Book.all_books[self.id] = self
 
+    def __str__(self):
+        return f"Title: {self.title}, Review: {self.review}, Price: {self.price}, Image URL: {self.imageUrl}, ID: {self.id}"
+
     def get_all_books():
-        return Book.all_books
-    
-    def get_book_by_id(id):
-        return Book.all_books[id]
+        return Book.all_books.values()
+
 
     
         

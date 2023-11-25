@@ -51,6 +51,7 @@ def get_page_html(url):
     soup = BeautifulSoup(response.content, 'html.parser')
     return soup
 
+
 def new_book_object(title, rating, price, picture, id):
     """
     Creates a new Book object.
@@ -65,8 +66,6 @@ def new_book_object(title, rating, price, picture, id):
     Book(title, rating, price, picture, id)
 
     
-
-
 def get_book_info(book_content):
     """
     Extracts information about a book from its HTML content and creates a Book object.
@@ -87,6 +86,7 @@ def get_book_info(book_content):
     new_book_object(title, rating, price, picture, None)
 
     return title, rating, price, picture
+
 
 def get_page_info(content):
     """
@@ -157,15 +157,31 @@ def get_all_pages_info(page_content):
     return all_titles, all_ratings, all_prices, all_pictures
 
 
+def complete_data():
+    books = Book.get_all_books()
+
+    for book in books: 
+
+        book.generate_book_content()
+        book.translate_book_content()
+        book.convert_price_to_euros()
+
+
 if __name__ == "__main__":
 
+    #1 ) Scrape the provided website and for the books get the title, rating, price and picture URL.
     base_page_content = get_page_html(BASE_URL + FIRST_PAGE)
     
     titles, ratings, prices, pictures = get_all_pages_info(base_page_content)
 
-    for book in Book.get_all_books():
-        print(str(book))
-        print()
+    #2) Process: Complete the previous data. Generate a unique ID for each book, generate the text of the book, translate and convert the price to euros.
+
+    complete_data()
+
+    # Print the information about each book.
+    for book in books: print(str(book) + "\n")
+
+
 
 
 

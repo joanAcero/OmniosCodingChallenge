@@ -1,5 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
+import csv
+from forex_python.converter import CurrencyRates
+
 
 from book import Book
 
@@ -79,7 +82,7 @@ def get_book_info(book_content):
 
     title = book_content.find('h3').find('a').get('title') if book_content.find('h3') else None
     rating = book_content.find('p', class_="star-rating").get('class')[1] if book_content.find('p', class_="star-rating") else None
-    price = book_content.find('p', class_="price_color").text if book_content.find('p', class_="price_color") else None
+    price = float((book_content.find('p', class_="price_color").text)[1:]) if book_content.find('p', class_="price_color") else None
     picture = book_content.find('img').get('src') if book_content.find('img') else None
 
     # Create a Book object for each book and append it to the books list.
@@ -160,26 +163,65 @@ def get_all_pages_info(page_content):
 def complete_data():
     books = Book.get_all_books()
 
-    for book in books: 
+    try:
+        exchange_rate = CurrencyRates().get_rate('USD', 'EUR')
+    except Exception as e:
+        print("Problem getting the current exchange rate. Exchange rate set to 0.91")
+        exchange_rate = 0.91
 
+    i = 1
+    for book in books: 
+        
         book.generate_book_content()
+        book.convert_price_to_euros(exchange_rate)
         book.translate_book_content()
-        book.convert_price_to_euros()
+        print(f"Book {i} completed")
+        i += 1
+
+
+def generate_csv():
+
+    books = Book.get_all_books()
+
+    with open('books.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow(['ID', 'Title', 'Review', 'Price($)', 'Price(€)', 'Picture URL', 'Text', 'Spanish Text', 'French Text'])
+
+        for book in books:
+            writer.writerow([book.id, book.title, book.review, book.price, book.eurosPrice , book.imageUrl, book.text, book.spanishText, book.frenchText])
+
+    with open('books.csv', newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter=',')
+        for row in reader:
+            print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
+
+
 
 
 if __name__ == "__main__":
 
     #1 ) Scrape the provided website and for the books get the title, rating, price and picture URL.
+    
     base_page_content = get_page_html(BASE_URL + FIRST_PAGE)
     
     titles, ratings, prices, pictures = get_all_pages_info(base_page_content)
+
+    print("data scraped")
 
     #2) Process: Complete the previous data. Generate a unique ID for each book, generate the text of the book, translate and convert the price to euros.
 
     complete_data()
 
-    # Print the information about each book.
-    for book in books: print(str(book) + "\n")
+    print("data completed")
+    
+    #3)Store: Generate a file that contains all scraped data.
+    
+    generate_csv()
+
+
+
+
+   
 
 
 

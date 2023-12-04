@@ -46,12 +46,14 @@ def get_page_html(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
+        soup = BeautifulSoup(response.content, 'html.parser')
     except requests.exceptions.HTTPError as http_error:
         print(f"HTTP Error: {http_error}")
+        soup = None
     except requests.exceptions.ConnectionError as connection_error:
         print(f"Connection Error: {connection_error}")
-
-    soup = BeautifulSoup(response.content, 'html.parser')
+        soup = None
+    
     return soup
 
 

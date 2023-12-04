@@ -1,7 +1,7 @@
 
 # Omnios Coding Challenge
 
-In the Omnios Coding Challenge, I was asked for two main tasks: 
+In the Omnios Coding Challenge, I was tasked with three primary objectives:
 
 1 ) Scrape the provided website and for the books, get:
 
@@ -22,8 +22,6 @@ In the Omnios Coding Challenge, I was asked for two main tasks:
 
 
 ## Implementation
-
-Here's a corrected version of your text:
 
 Firstly, to ensure the code is runnable on a maximum number of devices, I have Dockerized the project. You will find a Dockerfile in the project directory. More details on how to execute it are provided in the "Running with Docker" section.
 

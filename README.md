@@ -36,6 +36,13 @@ At the end of the execution, all the information will be stored in the books.csv
 The code is modular and commented to enhance readability and facilitate changes, for example, in APIs.
 
 
+## Efficiency
+
+The execution efficiency is tied to the performance of the utilized APIs, particularly in the context of the request to webserver API(to get the information of the website provided), the translation API and the text generation API.
+
+The execution time of the program may vary, depending on the status of the API servers and the Wi-Fi connection of the machine on which it is executed. A strong Wi-Fi connection can significantly reduce the running time.
+
+
 ## Running the code
 
 To run the project, follow these steps:
@@ -74,13 +81,6 @@ Replace your-image-name with the desired name for your image and tag with a vers
 4 ) Run the Docker Container: Run a container from the built image using:
 
     $ docker run -it your-image-name:tag
-
-## Efficiency
-
-The execution efficiency is tied to the performance of the utilized APIs, particularly in the context of the request to webserver API(to get the information of the website provided), the translation API and the text generation API.
-
-The execution time of the program may vary, contingent upon the status of the API servers and the Wi-Fi connection of the machine on which it is executed. 
-
 
 
 

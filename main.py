@@ -109,6 +109,8 @@ def get_page_info(content):
     prices = []
     pictures = []
 
+    if not content: return titles, ratings, prices, pictures #take into account if the content is None ( because of an error getting the information of the page)
+
     # Find all book elements identified by <li></li> tag and class = col-xs-6 col-sm-4 col-md-3 col-lg-3 in the HTML of the page.
     book_elements = content.find_all('li', class_="col-xs-6 col-sm-4 col-md-3 col-lg-3")
 
@@ -141,17 +143,16 @@ def get_all_pages_info(page_content):
     all_pictures = []
 
     current_page_content = page_content
-    i = 1
 
     print("Scraping...")
     progress_bar = tqdm(total=50, desc='Pages Scraped', position=0, leave=True)
 
 
-    # While there is a next page, fetch its content and extract the information about the books on it.
-    while current_page_content:
+    # For each page, extract the information about each book and append it to its respective list.
+    for i in range(1,51):
 
         #Get the titles, ratings, prices and picture URL of the books of the current page.
-        titles, ratings, prices, pictures = get_page_info(page_content)
+        titles, ratings, prices, pictures = get_page_info(current_page_content)
 
         all_titles.extend(titles)
         all_ratings.extend(ratings)
@@ -162,9 +163,7 @@ def get_all_pages_info(page_content):
         next_page_url = get_next_page_url(current_page_content)
 
         # If the next page exists, fetch its content and repeat the process.
-        current_page_content = get_page_html(next_page_url) if next_page_url else None
-
-        i += 1
+        current_page_content = get_page_html(next_page_url) if next_page_url else (BASE_URL + 'page-' + str(i+1) + '.html')
 
         # Update the progress bar
         progress_bar.update(1)

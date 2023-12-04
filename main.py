@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import csv
 from forex_python.converter import CurrencyRates
-
+from tqdm import tqdm
 
 from book import Book
 
@@ -141,6 +141,11 @@ def get_all_pages_info(page_content):
     all_pictures = []
 
     current_page_content = page_content
+    i = 1
+
+    print("Scraping...")
+    progress_bar = tqdm(total=50, desc='Pages Scraped', position=0, leave=True)
+
 
     # While there is a next page, fetch its content and extract the information about the books on it.
     while current_page_content:
@@ -159,6 +164,11 @@ def get_all_pages_info(page_content):
         # If the next page exists, fetch its content and repeat the process.
         current_page_content = get_page_html(next_page_url) if next_page_url else None
 
+        i += 1
+
+        # Update the progress bar
+        progress_bar.update(1)
+
     return all_titles, all_ratings, all_prices, all_pictures
 
 
@@ -170,6 +180,8 @@ def complete_data():
 
     books = Book.get_all_books()
 
+    print(str(len(books)) + " books scraped from the website, completing data...")
+
     try:
         exchange_rate = CurrencyRates().get_rate('USD', 'EUR')
     except Exception as e:
@@ -177,12 +189,12 @@ def complete_data():
         exchange_rate = 0.91
 
     i = 1
-    for book in books:                                  # For each book in the database:                          
+    for book in tqdm(books):                                  # For each book in the database:                          
         
         book.generate_book_content()                    # Generate the text of the book using an API.
         book.convert_price_to_euros(exchange_rate)      # Convert the price of the book from dollars to euros.
         book.translate_book_content()                   # Translate the text of the book to Spanish and French.
-        print(f"Book {i} completed")                    # Print a message to the console to show the progress.
+        #print(f"Book {i} completed")                    # Print a message to the console to show the progress.
         i += 1
 
 

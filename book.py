@@ -5,7 +5,6 @@ from deep_translator import GoogleTranslator
 
 class Book:
     
-    #API_KEY = 'bda94d92-e99f-498f-aa15-8a10e257a44b'      Useless while there is no API provided!
     current_id = 0 
     all_books = {}
 

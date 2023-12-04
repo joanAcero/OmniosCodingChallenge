@@ -77,9 +77,9 @@ Replace your-image-name with the desired name for your image and tag with a vers
 
 ## Efficiency
 
-The execution efficiency is tied to the performance of the utilized APIs, particularly in the context of the translation API and the text generation API.
+The execution efficiency is tied to the performance of the utilized APIs, particularly in the context of the request to webserver API(to get the information of the website provided), the translation API and the text generation API.
 
-
+The execution time of the program may vary, contingent upon the status of the API servers and the Wi-Fi connection of the machine on which it is executed. 
 
 
 

@@ -161,6 +161,11 @@ def get_all_pages_info(page_content):
 
 
 def complete_data():
+    """
+    Completes the data of each book in the database.    
+    """
+
+
     books = Book.get_all_books()
 
     try:
@@ -170,16 +175,19 @@ def complete_data():
         exchange_rate = 0.91
 
     i = 1
-    for book in books: 
+    for book in books:                                  # For each book in the database:                          
         
-        book.generate_book_content()
-        book.convert_price_to_euros(exchange_rate)
-        book.translate_book_content()
-        print(f"Book {i} completed")
+        book.generate_book_content()                    # Generate the text of the book using an API.
+        book.convert_price_to_euros(exchange_rate)      # Convert the price of the book from dollars to euros.
+        book.translate_book_content()                   # Translate the text of the book to Spanish and French.
+        print(f"Book {i} completed")                    # Print a message to the console to show the progress.
         i += 1
 
 
 def generate_csv():
+    """
+    Generates a CSV file with all the scraped data.
+    """
 
     books = Book.get_all_books()
 
@@ -190,17 +198,10 @@ def generate_csv():
         for book in books:
             writer.writerow([book.id, book.title, book.review, book.price, book.eurosPrice , book.imageUrl, book.text, book.spanishText, book.frenchText])
 
-    with open('books.csv', newline='') as csvfile:
-        reader = csv.reader(csvfile, delimiter=',')
-        for row in reader:
-            print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
-
-
-
 
 if __name__ == "__main__":
 
-    #1 ) Scrape the provided website and for the books get the title, rating, price and picture URL.
+    #1 ) Scrape the provided website and for each books get the title, rating, price and picture URL.
     
     base_page_content = get_page_html(BASE_URL + FIRST_PAGE)
     

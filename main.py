@@ -150,7 +150,7 @@ def get_all_pages_info(page_content):
 
     # For each page, extract the information about each book and append it to its respective list.
     for i in range(1,51):
-
+        
         #Get the titles, ratings, prices and picture URL of the books of the current page.
         titles, ratings, prices, pictures = get_page_info(current_page_content)
 
@@ -158,6 +158,8 @@ def get_all_pages_info(page_content):
         all_ratings.extend(ratings)
         all_prices.extend(prices)
         all_pictures.extend(pictures)
+
+        if i == 50: break # Stop scraping after 50 pages.
 
         # Find the URL of the next page, if it exists.
         next_page_url = get_next_page_url(current_page_content) if get_next_page_url(current_page_content) else (BASE_URL + 'page-' + str(i+1) + '.html')

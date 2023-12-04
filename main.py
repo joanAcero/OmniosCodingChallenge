@@ -160,10 +160,10 @@ def get_all_pages_info(page_content):
         all_pictures.extend(pictures)
 
         # Find the URL of the next page, if it exists.
-        next_page_url = get_next_page_url(current_page_content)
+        next_page_url = get_next_page_url(current_page_content) if get_next_page_url(current_page_content) else (BASE_URL + 'page-' + str(i+1) + '.html')
 
         # If the next page exists, fetch its content and repeat the process.
-        current_page_content = get_page_html(next_page_url) if next_page_url else (BASE_URL + 'page-' + str(i+1) + '.html')
+        current_page_content = get_page_html(next_page_url) if next_page_url else None
 
         # Update the progress bar
         progress_bar.update(1)

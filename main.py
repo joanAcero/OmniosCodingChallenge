@@ -145,7 +145,7 @@ def get_all_pages_info(page_content):
     current_page_content = page_content
 
     print("Scraping...")
-    progress_bar = tqdm(total=50, desc='Pages Scraped', position=0, leave=True)
+    progress_bar = tqdm(total=49, desc='Pages Scraped', position=0, leave=True)
 
 
     # For each page, extract the information about each book and append it to its respective list.
